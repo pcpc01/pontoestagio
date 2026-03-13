@@ -1,0 +1,60 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Employee {
+  id              String         @id @default(uuid())
+  name            String
+  course          String
+  registrationId  String         @unique
+  workSchedule    WorkSchedule   @relation(fields: [workScheduleId], references: [id])
+  workScheduleId  String
+  timeEntries     TimeEntry[]
+  justifications  Justification[]
+  status          String         @default("ACTIVE") // ACTIVE, INACTIVE
+  defaultEntryTime String?       @default("08:00")
+  defaultExitTime  String?       @default("12:00")
+  createdAt       DateTime       @default(now())
+}
+
+model WorkSchedule {
+  id            String     @id @default(uuid())
+  name          String
+  dailyHours    Float
+  weeklyHours   Float
+  employees     Employee[]
+}
+
+model TimeEntry {
+  id          String    @id @default(uuid())
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId  String
+  type        String
+  timestamp   DateTime  @default(now())
+  
+  @@index([employeeId, timestamp])
+}
+
+model Holiday {
+  id          String   @id @default(uuid())
+  date        DateTime @unique
+  description String?
+}
+
+model Justification {
+  id          String   @id @default(uuid())
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId  String
+  date        DateTime
+  type        String   // FERIADO, DISPENSA, ATESTADO, OUTROS
+  description String?
+
+  @@unique([employeeId, date])
+}
