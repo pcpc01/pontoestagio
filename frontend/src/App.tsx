@@ -64,7 +64,7 @@ const PunchCard = () => {
         const checkStatus = async () => {
             if (registrationId.length >= 3) {
                 try {
-                    const response = await fetch(`http://localhost:3001/api/check-punch/${registrationId}`);
+                    const response = await fetch(`api/check-punch/${registrationId}`);
                     if (response.ok) {
                         const data = await response.json();
                         setEmployeeStatus(data);
@@ -93,7 +93,7 @@ const PunchCard = () => {
         setMessage(null);
 
         try {
-            const response = await fetch('http://localhost:3001/api/register', {
+            const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ registrationId, type })
@@ -248,7 +248,7 @@ const EmployeeModal = ({ onClose, onSave, editingEmployee }: any) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/schedules')
+        fetch('/api/schedules')
             .then(res => res.json())
             .then(data => {
                 setSchedules(data);
@@ -270,8 +270,8 @@ const EmployeeModal = ({ onClose, onSave, editingEmployee }: any) => {
 
         try {
             const url = editingEmployee
-                ? `http://localhost:3001/api/employees/${editingEmployee.id}`
-                : 'http://localhost:3001/api/employees';
+                ? `/api/employees/${editingEmployee.id}`
+                : '/api/employees';
 
             const response = await fetch(url, {
                 method: editingEmployee ? 'PUT' : 'POST',
@@ -452,7 +452,7 @@ const Employees = () => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/employees');
+            const response = await fetch('/api/employees');
             const data = await response.json();
             setEmployees(Array.isArray(data) ? data : (data.data || []));
         } catch (error) {
@@ -474,7 +474,7 @@ const Employees = () => {
         if (!confirm('Tem certeza que deseja excluir este estagiário? Todos os registros de ponto vinculados também serão apagados.')) return;
 
         try {
-            const response = await fetch(`http://localhost:3001/api/employees/${id}`, {
+            const response = await fetch(`/api/employees/${id}`, {
                 method: 'DELETE'
             });
 
@@ -623,8 +623,8 @@ const ScheduleModal = ({ onClose, onSave, editingSchedule }: any) => {
 
         try {
             const url = editingSchedule
-                ? `http://localhost:3001/api/schedules/${editingSchedule.id}`
-                : 'http://localhost:3001/api/schedules';
+                ? `/api/schedules/${editingSchedule.id}`
+                : '/api/schedules';
 
             const response = await fetch(url, {
                 method: editingSchedule ? 'PUT' : 'POST',
@@ -866,8 +866,8 @@ const Holidays = ({ holidays, fetchHolidays }: { holidays: any[], fetchHolidays:
 
     const handleSave = async (formData: any) => {
         const url = editingHoliday 
-            ? `http://localhost:3001/api/holidays/${editingHoliday.id}`
-            : 'http://localhost:3001/api/holidays';
+            ? `/api/holidays/${editingHoliday.id}`
+            : '/api/holidays';
         
         const response = await fetch(url, {
             method: editingHoliday ? 'PUT' : 'POST',
@@ -881,7 +881,7 @@ const Holidays = ({ holidays, fetchHolidays }: { holidays: any[], fetchHolidays:
 
     const handleDelete = async (id: string) => {
         if (!confirm('Tem certeza que deseja excluir este feriado?')) return;
-        const response = await fetch(`http://localhost:3001/api/holidays/${id}`, {
+        const response = await fetch(`/api/holidays/${id}`, {
             method: 'DELETE'
         });
         if (response.ok) fetchHolidays();
@@ -1002,7 +1002,7 @@ const Schedules = () => {
 
     const fetchSchedules = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/schedules');
+            const response = await fetch('/api/schedules');
             const data = await response.json();
             setSchedules(data);
         } catch (error) {
@@ -1020,7 +1020,7 @@ const Schedules = () => {
         if (!confirm('Tem certeza que deseja excluir esta jornada?')) return;
 
         try {
-            const response = await fetch(`http://localhost:3001/api/schedules/${id}`, {
+            const response = await fetch(`/api/schedules/${id}`, {
                 method: 'DELETE'
             });
 
@@ -1161,7 +1161,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
     const handleDeleteSinglePunch = async (id: string) => {
         if (!confirm("Deseja realmente excluir este registro?")) return;
         try {
-            const response = await fetch(`http://localhost:3001/api/time-entries/${id}`, {
+            const response = await fetch(`/api/time-entries/${id}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
@@ -1183,7 +1183,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 
     const fetchEmployees = async () => {
         try {
-            const employeesRes = await fetch('http://localhost:3001/api/employees');
+            const employeesRes = await fetch('/api/employees');
             const employeesData = await employeesRes.json();
             setEmployees(employeesData);
         } catch (error) {
@@ -1194,7 +1194,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
     const fetchAvailableMonths = async () => {
         if (!selectedEmployeeId) return;
         try {
-            const res = await fetch(`http://localhost:3001/api/history/months?employeeId=${selectedEmployeeId}`);
+            const res = await fetch(`/api/history/months?employeeId=${selectedEmployeeId}`);
             const data = await res.json();
             
             const now = new Date();
@@ -1246,8 +1246,8 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
         setLoading(true);
         try {
             const [historyRes, justificationsRes] = await Promise.all([
-                fetch(`http://localhost:3001/api/history?employeeId=${selectedEmployeeId}`),
-                fetch(`http://localhost:3001/api/justifications?employeeId=${selectedEmployeeId}`)
+                fetch(`/api/history?employeeId=${selectedEmployeeId}`),
+                fetch(`/api/justifications?employeeId=${selectedEmployeeId}`)
             ]);
             
             const historyData = await historyRes.json();
@@ -1277,7 +1277,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 
             try {
                 await Promise.all(dateEntries.map(e => 
-                    fetch(`http://localhost:3001/api/time-entries/${e.id}`, { method: 'DELETE' })
+                    fetch(`/api/time-entries/${e.id}`, { method: 'DELETE' })
                 ));
             } catch (err) {
                 console.error("Erro ao remover horários:", err);
@@ -1286,7 +1286,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
         }
 
         try {
-            const response = await fetch('http://localhost:3001/api/justifications/toggle', {
+            const response = await fetch('/api/justifications/toggle', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1364,7 +1364,6 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 
             // Check if global holiday
             const globalHoliday = isDateHoliday(day, holidays);
-            const holidayText = globalHoliday ? `FERIADO: ${globalHoliday.name}` : null;
 
             const dailyMetaMinutes = (employee.workSchedule?.dailyHours || 0) * 60;
             let saldoMinutes = 0;
@@ -1481,8 +1480,8 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 
             // Fetch ALL data once at the beginning
             const [historyRes, justificationsRes] = await Promise.all([
-                fetch(`http://localhost:3001/api/history?employeeId=${selectedEmployeeId}`),
-                fetch(`http://localhost:3001/api/justifications?employeeId=${selectedEmployeeId}`)
+                fetch(`/api/history?employeeId=${selectedEmployeeId}`),
+                fetch(`/api/justifications?employeeId=${selectedEmployeeId}`)
             ]);
             
             const allHistory = await historyRes.json();
@@ -1692,7 +1691,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
                 const confirmRemove = window.confirm(`Atenção: Este dia já possui uma justificativa (${existingJ.type}). Deseja remover a justificativa para registrar estes horários?`);
                 if (!confirmRemove) return;
                 
-                await fetch('http://localhost:3001/api/justifications/toggle', {
+                await fetch('/api/justifications/toggle', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1715,7 +1714,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
                 const dbTimestamp = format(localDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
                 
                 if (entryId) {
-                    await fetch(`http://localhost:3001/api/time-entries/${entryId}`, {
+                    await fetch(`/api/time-entries/${entryId}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1725,7 +1724,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
                     });
                 } else {
                     const employeeId = isAdding ? isAdding.employeeId : (editingInEntry || editingOutEntry).employeeId;
-                    await fetch(`http://localhost:3001/api/register-manual`, {
+                    await fetch(`/api/register-manual`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1759,7 +1758,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
             // Deletar batimentos de ponto
             if (punches && punches.length > 0) {
                 for (const p of punches) {
-                    await fetch(`http://localhost:3001/api/time-entries/${p.id}`, {
+                    await fetch(`/api/time-entries/${p.id}`, {
                         method: 'DELETE'
                     });
                 }
@@ -1767,7 +1766,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 
             // Deletar justificativa se houver
             if (justification) {
-                await fetch('http://localhost:3001/api/justifications/toggle', {
+                await fetch('/api/justifications/toggle', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1792,12 +1791,12 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 
         try {
             if (editingInEntry) {
-                await fetch(`http://localhost:3001/api/time-entries/${editingInEntry.id}`, {
+                await fetch(`/api/time-entries/${editingInEntry.id}`, {
                     method: 'DELETE'
                 });
             }
             if (editingOutEntry) {
-                await fetch(`http://localhost:3001/api/time-entries/${editingOutEntry.id}`, {
+                await fetch(`/api/time-entries/${editingOutEntry.id}`, {
                     method: 'DELETE'
                 });
             }
@@ -1817,7 +1816,7 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
             const localDate = new Date(y, mo - 1, d, h, mi);
             const dbTimestamp = format(localDate, "yyyy-MM-dd'T'HH:mm:ssXXX"); 
 
-            const response = await fetch(`http://localhost:3001/api/time-entries/${entryId}`, {
+            const response = await fetch(`/api/time-entries/${entryId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2557,7 +2556,7 @@ const LoginModal = ({ onLogin, onClose }: { onLogin: () => void, onClose: () => 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:3001/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })
@@ -2629,7 +2628,7 @@ function App() {
 
     const fetchHolidays = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/holidays');
+            const response = await fetch('/api/holidays');
             const data = await response.json();
             setHolidays(data);
         } catch (error) {
