@@ -4,9 +4,13 @@ const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 const { differenceInMinutes, startOfDay, endOfDay, format } = require('date-fns');
 
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('ERRO CRÍTICO: Variáveis do Supabase não encontradas no ambiente!');
+}
+
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
 const crypto = require('crypto');
