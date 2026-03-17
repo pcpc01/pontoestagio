@@ -13,7 +13,9 @@ import {
     X,
     FileDown,
     Trash2,
-    LogOut
+    LogOut,
+    Shield,
+    ArrowRight
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -2550,68 +2552,96 @@ const HistoryView = ({ isAdmin = false, holidays }: { isAdmin?: boolean, holiday
 };
 
 const LoginModal = ({ onLogin, onClose }: { onLogin: () => void, onClose: () => void }) => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password })
+                body: JSON.stringify({ email, password })
             });
             const data = await response.json();
             if (response.ok && data.success) {
                 onLogin();
             } else {
-                setError('Senha incorreta.');
+                setError(data.error || 'E-mail ou senha incorretos.');
             }
         } catch (err) {
-            setError('Erro ao conectar ao servidor.');
+            setError('Erro ao conectar com o servidor.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300">
-                <div className="p-8">
-                    <div className="flex flex-col items-center text-center mb-8">
-                        <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-4">
-                            <Briefcase size={32} />
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Acesso Administrativo</h3>
-                        <p className="text-sm text-slate-500 mt-1">Digite a senha para gerenciar o sistema</p>
+            <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-300">
+                <div className="text-center mb-8">
+                    <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Shield className="text-brand-600" size={32} />
                     </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <h2 className="text-2xl font-black text-slate-800">Admin</h2>
+                    <p className="text-slate-500 font-medium">Faça login para gerenciar o sistema</p>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase text-slate-400 ml-1">E-mail</label>
                         <input
-                            autoFocus
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-700"
+                            placeholder="exemplo@unitau.br"
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase text-slate-400 ml-1">Senha</label>
+                        <input
                             type="password"
-                            placeholder="Senha do administrador"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all text-center text-lg font-bold"
+                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-700"
+                            placeholder="Sua senha"
+                            required
                         />
-                        {error && <p className="text-rose-500 text-xs font-bold text-center">{error}</p>}
-                        
-                        <div className="pt-4 flex flex-col gap-3">
-                            <button
-                                type="submit"
-                                className="w-full py-4 bg-brand-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-brand-500/20 hover:bg-brand-700 transition-all"
-                            >
-                                Acessar Painel
-                            </button>
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="w-full py-3 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600 transition-colors"
-                            >
-                                Voltar
-                            </button>
+                    </div>
+                    
+                    {error && (
+                        <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold animate-shake">
+                            {error}
                         </div>
-                    </form>
-                </div>
+                    )}
+                    
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-5 bg-brand-600 text-white font-black rounded-2xl shadow-xl shadow-brand-500/20 hover:bg-brand-700 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                    >
+                        {loading ? 'Entrando...' : (
+                            <>
+                                <span>Acessar Painel</span>
+                                <ArrowRight size={20} />
+                            </>
+                        )}
+                    </button>
+                    
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="w-full py-4 text-slate-400 font-bold hover:text-slate-600 transition-colors text-sm"
+                    >
+                        Voltar para a Batida
+                    </button>
+                </form>
             </div>
         </div>
     );
