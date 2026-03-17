@@ -48,11 +48,14 @@ const calculateWorkedHours = async (employeeId, startDate, endDate) => {
 // Endpoints
 app.post('/api/login', (req, res) => {
   const { password } = req.body;
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  // Trimmos a senha do env para evitar espaços em branco invisíveis da Vercel
+  const adminPassword = (process.env.ADMIN_PASSWORD || 'admin123').trim();
   
   if (password === adminPassword) {
     res.json({ success: true });
   } else {
+    // Log para você ver no painel da Vercel se a senha está chegando vazia ou diferente
+    console.log(`Tentativa de login. Recebido: "${password}", Esperado: "${adminPassword}"`);
     res.status(401).json({ success: false, error: 'Senha incorreta' });
   }
 });
@@ -603,4 +606,8 @@ app.get('/api/justifications', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+}
+
+module.exports = app;
